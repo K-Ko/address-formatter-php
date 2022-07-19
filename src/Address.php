@@ -8,112 +8,112 @@ class Address implements \Stringable
 {
     public function setAttention($val): Address
     {
-        $this->attention = $val;
+        $this->attention = (string) $val;
 
         return $this;
     }
 
     public function setHouseNumber($val): Address
     {
-        $this->houseNumber = $val;
+        $this->houseNumber = (string) $val;
 
         return $this;
     }
 
     public function setHouse($val): Address
     {
-        $this->house = $val;
+        $this->house = (string) $val;
 
         return $this;
     }
 
     public function setRoad($val): Address
     {
-        $this->road = $val;
+        $this->road = (string) $val;
 
         return $this;
     }
 
     public function setVillage($val): Address
     {
-        $this->village = $val;
+        $this->village = (string) $val;
 
         return $this;
     }
 
     public function setSuburb($val): Address
     {
-        $this->suburb = $val;
+        $this->suburb = (string) $val;
 
         return $this;
     }
 
     public function setCity($val): Address
     {
-        $this->city = $val;
+        $this->city = (string) $val;
 
         return $this;
     }
 
     public function setCounty($val): Address
     {
-        $this->county = $val;
+        $this->county = (string) $val;
 
         return $this;
     }
 
     public function setPostcode($val): Address
     {
-        $this->postcode = $val;
+        $this->postcode = (string) $val;
 
         return $this;
     }
 
     public function setStateDistrict($val): Address
     {
-        $this->stateDistrict = $val;
+        $this->stateDistrict = (string) $val;
 
         return $this;
     }
 
     public function setState($val): Address
     {
-        $this->state = $val;
+        $this->state = (string) $val;
 
         return $this;
     }
 
     public function setRegion($val): Address
     {
-        $this->region = $val;
+        $this->region = (string) $val;
 
         return $this;
     }
 
     public function setIsland($val): Address
     {
-        $this->island = $val;
+        $this->island = (string) $val;
 
         return $this;
     }
 
     public function setCountry($val): Address
     {
-        $this->country = $val;
+        $this->country = (string) $val;
 
         return $this;
     }
 
     public function setCountryCode($val): Address
     {
-        $this->countryCode = $val;
+        $this->countryCode = (string) $val;
 
         return $this;
     }
 
     public function setContinent($val): Address
     {
-        $this->continent = $val;
+        $this->continent = (string) $val;
 
         return $this;
     }
