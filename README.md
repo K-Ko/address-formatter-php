@@ -12,8 +12,10 @@ Install the latest version with
 
 ```bash
 $ composer require predicthq/address-formatter
-```
 
+$ git submodule init
+$ git submodule update
+```
 
 ### Examples
 

@@ -1,5 +1,5 @@
 {
-    "name": "predicthq/address-formatter",
+    "name": "k-ko/address-formatter-php",
     "description": "Address formatter using country templates from https://github.com/OpenCageData/address-formatting",
     "keywords": ["predicthq","address"],
     "type": "library",
@@ -14,11 +14,14 @@
             "homepage": "http://www.robertkern.com",
             "role": "Developer"
         }
+        {
+            "name": "Knut Kohl",
+            "role": "Developer"
+        }
     ],
     "require": {
-        "php": ">=7.1.3",
-        "predicthq/address-formatter-templates": "~1.0",
-        "symfony/yaml": "^4.0",
+        "php": ">=7.3",
+        "symfony/yaml": "*",
         "mustache/mustache": "~2.0"
     },
     "require-dev": {

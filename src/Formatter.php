@@ -1,8 +1,9 @@
 <?php
+
 namespace PredictHQ\AddressFormatter;
 
-use Symfony\Component\Yaml\Yaml;
 use PredictHQ\AddressFormatter\Exception\TemplatesMissingException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Format an address based on the country template.
@@ -106,7 +107,7 @@ class Formatter
     {
         $countryCode = (isset($options['country'])) ? $options['country'] : $this->determineCountryCode($addressArray);
 
-        if (strlen($countryCode) > 0){
+        if (strlen($countryCode) > 0) {
             $addressArray['country_code'] = $countryCode;
         }
 
@@ -199,7 +200,7 @@ class Formatter
                         foreach ($abbreviations as $key => $val) {
                             if (array_key_exists($key, $addressArray)) {
                                 foreach ($val as $long => $short) {
-                                  $orig = $addressArray[$key];
+                                    $orig = $addressArray[$key];
                                     $addressArray[$key] = preg_replace("/\b$long\b/u", $short, $addressArray[$key]);
 
                                     if ($addressArray[$key] !== $orig) {
@@ -242,7 +243,7 @@ class Formatter
 
         //Do any country-specific rules
         foreach ($replacements as $replacement) {
-            $text = preg_replace('/'.$replacement[0].'/u', $replacement[1], $text);
+            $text = preg_replace('/' . $replacement[0] . '/u', $replacement[1], $text);
         }
 
         return $text;
@@ -253,7 +254,7 @@ class Formatter
         $m = new \Mustache_Engine;
 
         $context = $addressArray;
-        $context['first'] = function($text) use (&$m, &$addressArray) {
+        $context['first'] = function ($text) use (&$m, &$addressArray) {
             $newText = $m->render($text, $addressArray);
             $matched = preg_split("/\s*\|\|\s*/", $newText);
             $first = current(array_filter($matched));
@@ -387,7 +388,7 @@ class Formatter
     {
         foreach ($addressArray as $key => $val) {
             foreach ($replacements as $replacement) {
-                if (preg_match('/^'.$key.'=(.+)/', $replacement[0], $matches) > 0) {
+                if (preg_match('/^' . $key . '=(.+)/', $replacement[0], $matches) > 0) {
                     //This is a key-specific replacement (e.g., city=ABC), work out the value to replace
                     $from = $matches[1];
 
@@ -395,7 +396,7 @@ class Formatter
                         $addressArray[$key] = $replacement[1];
                     }
                 } else {
-                    $addressArray[$key] = preg_replace('/'.$replacement[0].'/', $replacement[1], $addressArray[$key]);
+                    $addressArray[$key] = preg_replace('/' . $replacement[0] . '/', $replacement[1], $addressArray[$key]);
                 }
             }
         }
@@ -424,7 +425,7 @@ class Formatter
 
                 if ($type === 'state') {
                     if (array_key_exists($addressArray['country_code'], $this->stateCodes)) {
-                        foreach($this->stateCodes[$addressArray['country_code']] as $key => $val) {
+                        foreach ($this->stateCodes[$addressArray['country_code']] as $key => $val) {
                             if (strtoupper($addressArray['state']) == strtoupper($val)) {
                                 $addressArray['state_code'] = $key;
                             }
@@ -455,7 +456,7 @@ class Formatter
                     }
                 } elseif ($type === 'county') {
                     if (array_key_exists($addressArray['country_code'], $this->countyCodes)) {
-                        foreach($this->countyCodes[$addressArray['country_code']] as $key => $val) {
+                        foreach ($this->countyCodes[$addressArray['country_code']] as $key => $val) {
                             if (strtoupper($addressArray['county']) == strtoupper($val)) {
                                 $addressArray['county_code'] = $key;
                             }
@@ -496,9 +497,9 @@ class Formatter
                             $component = $matches[1];
 
                             if (isset($addressArray[$component])) {
-                                $newCountry = preg_replace('/\$'.$component.'/', $addressArray[$component], $newCountry);
+                                $newCountry = preg_replace('/\$' . $component . '/', $addressArray[$component], $newCountry);
                             } else {
-                                $newCountry = preg_replace('/\$'.$component.'/', '', $newCountry);
+                                $newCountry = preg_replace('/\$' . $component . '/', '', $newCountry);
                             }
                         }
 
