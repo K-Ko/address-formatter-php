@@ -578,18 +578,18 @@ class Formatter
 
     public function loadTemplates()
     {
-        /**
-         * Unfortunately it's not possible to include a git submodule with a composer package, so we load
-         * the address-formatting templates as a separate package via our composer.json and if the address-formatting
-         * templates exist at the expected location for a composer loaded package, we use that by default.
-         */
-        $composerTemplatesPath = implode(DIRECTORY_SEPARATOR, array(realpath(dirname(__FILE__)), '..', '..', 'address-formatter-templates', 'conf'));
+        // Local vendor
+        $templatesPath = implode(
+            DIRECTORY_SEPARATOR,
+            array(realpath(dirname(__FILE__)), '..', 'vendor', 'predicthq', 'address-formatter-templates', 'conf')
+        );
 
-        if (is_dir($composerTemplatesPath)) {
-            $templatesPath = $composerTemplatesPath;
-        } else {
-            //Use the git submodule path
-            $templatesPath = implode(DIRECTORY_SEPARATOR, array(realpath(dirname(__FILE__)), '..', 'address-formatter-templates', 'conf'));
+        // Packages
+        if (!is_dir($templatesPath)) {
+            $templatesPath = implode(
+                DIRECTORY_SEPARATOR,
+                array(realpath(dirname(__FILE__)), '..', '..', '..', 'predicthq', 'address-formatter-templates', 'conf')
+            );
         }
 
         if (is_dir($templatesPath)) {
