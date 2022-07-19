@@ -1,27 +1,21 @@
 # Address Formatter for PHP
 
-[![Build Status](https://travis-ci.org/predicthq/address-formatter-php.svg?branch=master)](https://travis-ci.org/predicthq/address-formatter-php)
-[![Coverage Status](https://coveralls.io/repos/github/predicthq/address-formatter-php/badge.svg?branch=master)](https://coveralls.io/github/predicthq/address-formatter-php?branch=master)
-
 This library uses the address templates from <https://github.com/OpenCageData/address-formatting> to format addresses
 differently depending on the country.
 
-### Installation
+## Installation
 
 Install the latest version with
 
-```bash
+``` bash
 $ composer require predicthq/address-formatter
-
-$ git submodule init
-$ git submodule update
 ```
 
-### Examples
+## Examples
 
 You can use either the `Address` object or provide an array of address parts.
 
-```php
+``` php
 use PredictHQ\AddressFormatter\Address;
 
 $a = new Address();
@@ -77,6 +71,6 @@ $f = new Formatter();
 $actual = $f->formatArray($address);
 ```
 
-### Tests
+## Tests
 
 Run tests using `./vendor/bin/phpunit`
