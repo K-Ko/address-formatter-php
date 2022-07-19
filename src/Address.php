@@ -1,222 +1,234 @@
 <?php
+
 namespace PredictHQ\AddressFormatter;
 
 use PredictHQ\AddressFormatter\Formatter;
 
-class Address
+class Address implements \Stringable
 {
-    private $attention = '';
-    private $houseNumber = '';
-    private $house = '';
-    private $road = '';
-    private $village = '';
-    private $suburb = '';
-    private $city = '';
-    private $county = '';
-    private $postcode = '';
-    private $stateDistrict = '';
-    private $state = '';
-    private $region = '';
-    private $island = '';
-    private $country = '';
-    private $countryCode = '';
-    private $continent = '';
-
-    public function setAttention($val)
+    public function setAttention($val): Address
     {
         $this->attention = $val;
 
         return $this;
     }
 
-    public function setHouseNumber($val)
+    public function setHouseNumber($val): Address
     {
         $this->houseNumber = $val;
 
         return $this;
     }
 
-    public function setHouse($val)
+    public function setHouse($val): Address
     {
         $this->house = $val;
 
         return $this;
     }
 
-    public function setRoad($val)
+    public function setRoad($val): Address
     {
         $this->road = $val;
 
         return $this;
     }
 
-    public function setVillage($val)
+    public function setVillage($val): Address
     {
         $this->village = $val;
 
         return $this;
     }
 
-    public function setSuburb($val)
+    public function setSuburb($val): Address
     {
         $this->suburb = $val;
 
         return $this;
     }
 
-    public function setCity($val)
+    public function setCity($val): Address
     {
         $this->city = $val;
 
         return $this;
     }
 
-    public function setCounty($val)
+    public function setCounty($val): Address
     {
         $this->county = $val;
 
         return $this;
     }
 
-    public function setPostcode($val)
+    public function setPostcode($val): Address
     {
         $this->postcode = $val;
 
         return $this;
     }
 
-    public function setStateDistrict($val)
+    public function setStateDistrict($val): Address
     {
         $this->stateDistrict = $val;
 
         return $this;
     }
 
-    public function setState($val)
+    public function setState($val): Address
     {
         $this->state = $val;
 
         return $this;
     }
 
-    public function setRegion($val)
+    public function setRegion($val): Address
     {
         $this->region = $val;
 
         return $this;
     }
 
-    public function setIsland($val)
+    public function setIsland($val): Address
     {
         $this->island = $val;
 
         return $this;
     }
 
-    public function setCountry($val)
+    public function setCountry($val): Address
     {
         $this->country = $val;
 
         return $this;
     }
 
-    public function setCountryCode($val)
+    public function setCountryCode($val): Address
     {
         $this->countryCode = $val;
 
         return $this;
     }
 
-    public function setContinent($val)
+    public function setContinent($val): Address
     {
         $this->continent = $val;
 
         return $this;
     }
 
-    public function getAttention()
+    public function getAttention(): string
     {
         return $this->attention;
     }
 
-    public function getHouseNumber()
+    public function getHouseNumber(): string
     {
         return $this->houseNumber;
     }
 
-    public function getHouse()
+    public function getHouse(): string
     {
         return $this->house;
     }
 
-    public function getRoad()
+    public function getRoad(): string
     {
         return $this->road;
     }
 
-    public function getVillage()
+    public function getVillage(): string
     {
         return $this->village;
     }
 
-    public function getSuburb()
+    public function getSuburb(): string
     {
         return $this->suburb;
     }
 
-    public function getCity()
+    public function getCity(): string
     {
         return $this->city;
     }
 
-    public function getCounty()
+    public function getCounty(): string
     {
         return $this->county;
     }
 
-    public function getPostcode()
+    public function getPostcode(): string
     {
         return $this->postcode;
     }
 
-    public function getStateDistrict()
+    public function getStateDistrict(): string
     {
         return $this->stateDistrict;
     }
 
-    public function getState()
+    public function getState(): string
     {
         return $this->state;
     }
 
-    public function getRegion()
+    public function getRegion(): string
     {
         return $this->region;
     }
 
-    public function getIsland()
+    public function getIsland(): string
     {
         return $this->island;
     }
 
-    public function getCountry()
+    public function getCountry(): string
     {
         return $this->country;
     }
 
-    public function getCountryCode()
+    public function getCountryCode(): string
     {
         return $this->countryCode;
     }
 
-    public function getContinent()
+    public function getContinent(): string
     {
         return $this->continent;
     }
 
-    public function format()
+    public function format(array $options = []): string
     {
-        $f = new Formatter();
-        return $f->format($this);
+        // Buffer Formatter instance to load templates only once
+        if (!self::$formatter) {
+            self::$formatter = new Formatter();
+        }
+
+        return self::$formatter->format($this, $options);
     }
+
+    public function __toString(): string
+    {
+        return $this->format();
+    }
+
+    private static $formatter;
+
+    private $attention     = '';
+    private $houseNumber   = '';
+    private $house         = '';
+    private $road          = '';
+    private $village       = '';
+    private $suburb        = '';
+    private $city          = '';
+    private $county        = '';
+    private $postcode      = '';
+    private $stateDistrict = '';
+    private $state         = '';
+    private $region        = '';
+    private $island        = '';
+    private $country       = '';
+    private $countryCode   = '';
+    private $continent     = '';
 }

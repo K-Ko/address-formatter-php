@@ -40,7 +40,7 @@ class Formatter
     /**
      * Pass a PredictHQ\AddressFormatter\Address object here
      */
-    public function format(Address $address, $options = [])
+    public function format(Address $address, array $options = []): string
     {
         $addressArray = [];
 
@@ -103,7 +103,7 @@ class Formatter
     //
     // 'abbreviate', if supplied common abbreviations are applied
     // to the resulting output.
-    public function formatArray($addressArray, $options = [])
+    public function formatArray(array $addressArray, array $options = []): string
     {
         $countryCode = (isset($options['country'])) ? $options['country'] : $this->determineCountryCode($addressArray);
 
@@ -169,7 +169,7 @@ class Formatter
         return $text;
     }
 
-    private function findUnknownComponents($addressArray)
+    private function findUnknownComponents(array $addressArray): array
     {
         $unknown = [];
 
@@ -182,7 +182,7 @@ class Formatter
         return $unknown;
     }
 
-    private function abbreviate($addressArray)
+    private function abbreviate(array $addressArray): array
     {
         if (isset($addressArray['country_code'])) {
             $countryCode = strtoupper($addressArray['country_code']);
@@ -216,7 +216,7 @@ class Formatter
         return $addressArray;
     }
 
-    private function postFormatReplace($text, $replacements)
+    private function postFormatReplace(string $text, array $replacements): string
     {
         //Remove duplicates
         $beforePieces = explode(', ', $text);
@@ -249,7 +249,7 @@ class Formatter
         return $text;
     }
 
-    private function render($tplText, $addressArray)
+    private function render(string $tplText, array $addressArray): string
     {
         $m = new \Mustache_Engine;
 
@@ -286,7 +286,7 @@ class Formatter
         return $text;
     }
 
-    private function cleanupRendered($text)
+    private function cleanupRendered(string $text): string
     {
         $replacements = [
             '/[\},\s]+$/u' => '',
@@ -364,7 +364,7 @@ class Formatter
         return $text;
     }
 
-    private function fixCountry($addressArray)
+    private function fixCountry(array $addressArray): array
     {
         /**
          * Hacks for bad country data
@@ -384,7 +384,7 @@ class Formatter
         return $addressArray;
     }
 
-    private function applyReplacements($addressArray, $replacements)
+    private function applyReplacements(array $addressArray, array $replacements): array
     {
         foreach ($addressArray as $key => $val) {
             foreach ($replacements as $replacement) {
@@ -396,7 +396,11 @@ class Formatter
                         $addressArray[$key] = $replacement[1];
                     }
                 } else {
-                    $addressArray[$key] = preg_replace('/' . $replacement[0] . '/', $replacement[1], $addressArray[$key]);
+                    $addressArray[$key] = preg_replace(
+                        '/' . $replacement[0] . '/',
+                        $replacement[1],
+                        $addressArray[$key]
+                    );
                 }
             }
         }
@@ -404,17 +408,17 @@ class Formatter
         return $addressArray;
     }
 
-    private function addStateCode($addressArray)
+    private function addStateCode(array $addressArray): array
     {
         return $this->addCode('state', $addressArray);
     }
 
-    private function addCountyCode($addressArray)
+    private function addCountyCode(array $addressArray): array
     {
         return $this->addCode('county', $addressArray);
     }
 
-    private function addCode($type, $addressArray)
+    private function addCode(string $type, array $addressArray): array
     {
         if (array_key_exists('country_code', $addressArray) && array_key_exists($type, $addressArray)) {
             $code = $type . '_code';
@@ -469,7 +473,7 @@ class Formatter
         return $addressArray;
     }
 
-    private function determineCountryCode(&$addressArray)
+    private function determineCountryCode(array &$addressArray): string
     {
         $countryCode = (isset($addressArray['country_code'])) ? $addressArray['country_code'] : '';
 
@@ -533,7 +537,7 @@ class Formatter
         return $countryCode;
     }
 
-    private function sanityCleanAddress($addressArray)
+    private function sanityCleanAddress(array $addressArray): array
     {
         if (isset($addressArray['postcode'])) {
             if (strlen($addressArray['postcode']) > 20) {
@@ -557,11 +561,13 @@ class Formatter
         return $addressArray;
     }
 
-    private function hasMinimumAddressComponents($addressArray)
+    private function hasMinimumAddressComponents(array $addressArray): bool
     {
         $missing = 0;
         $minThreshold = 2;
-        $requiredComponents = ['road', 'postcode']; //These should probably be provided in the templates or somewhere else other than here!
+
+        // These should probably be provided in the templates or somewhere else other than here!
+        $requiredComponents = ['road', 'postcode'];
 
         foreach ($requiredComponents as $requiredComponent) {
             if (!isset($addressArray[$requiredComponent])) {
@@ -576,93 +582,98 @@ class Formatter
         return ($missing < $minThreshold) ? true : false;
     }
 
-    public function loadTemplates()
-    {
-        // Local vendor
-        $templatesPath = implode(
-            DIRECTORY_SEPARATOR,
-            array(realpath(dirname(__FILE__)), '..', 'vendor', 'predicthq', 'address-formatter-templates', 'conf')
-        );
-
-        // Packages
-        if (!is_dir($templatesPath)) {
-            $templatesPath = implode(
-                DIRECTORY_SEPARATOR,
-                array(realpath(dirname(__FILE__)), '..', '..', '..', 'predicthq', 'address-formatter-templates', 'conf')
-            );
-        }
-
-        if (is_dir($templatesPath)) {
-            $countriesPath = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'countries', 'worldwide.yaml'));
-            $componentsPath = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'components.yaml'));
-            $stateCodesPath = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'state_codes.yaml'));
-            $countryToLangPath = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'country2lang.yaml'));
-            $countyCodesPath = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'county_codes.yaml'));
-            $abbreviationFiles = glob(implode(DIRECTORY_SEPARATOR, array($templatesPath, 'abbreviations/*.yaml')));
-
-            $components = [];
-            $componentAliases = [];
-            $templates = [];
-            $stateCodes = [];
-            $countryToLang = [];
-            $countyCodes = [];
-            $abbreviations = [];
-
-            /**
-             * The components file is made up of multiple yaml documents but the symfony yaml parser
-             * doesn't support multiple docs in a single file. So we split it into multiple docs.
-             */
-            $componentYamlParts = explode('---', file_get_contents($componentsPath));
-
-            foreach ($componentYamlParts as $key => $val) {
-                $component = Yaml::parse($val);
-
-                if (isset($component['aliases'])) {
-                    foreach ($component['aliases'] as $k => $v) {
-                        $componentAliases[$v] = $component['name'];
-                    }
-                }
-
-                $components[$component['name']] = (isset($component['aliases'])) ? $component['aliases'] : [];
-            }
-
-            //Load the country templates, state codes and country2lang data
-            $templates = Yaml::parse(file_get_contents($countriesPath));
-            $stateCodes = Yaml::parse(file_get_contents($stateCodesPath));
-            $countryToLang = Yaml::parse(file_get_contents($countryToLangPath));
-            $countyCodes = Yaml::parse(file_get_contents($countyCodesPath));
-
-            //Load the abbreviations files
-            foreach ($abbreviationFiles as $key => $val) {
-                $lang = strtoupper(basename($val, '.yaml'));
-                $data = Yaml::parse(file_get_contents($val));
-                $abbreviations[$lang] = $data;
-            }
-
-            $this->components = $components;
-            $this->componentAliases = $componentAliases;
-            $this->templates = $templates;
-            $this->stateCodes = $stateCodes;
-            $this->countryToLang = $countryToLang;
-            $this->countyCodes = $countyCodes;
-            $this->abbreviations = $abbreviations;
-        } else {
-            throw new TemplatesMissingException('Address formatting templates path cannot be found.');
-        }
-    }
-
-    public function getComponents()
+    public function getComponents(): array
     {
         return $this->components;
     }
 
-    public function getCountries()
+    public function getCountries(): array
     {
         return $this->countries;
     }
 
-    public function getStateCodes()
+    public function getStateCodes(): array
     {
         return $this->stateCodes;
+    }
+
+    /**
+     * Load YAML templates
+     *
+     * @throws \PredictHQ\AddressFormatter\Exception\TemplatesMissingException
+     */
+    private function loadTemplates(): void
+    {
+        // Installed as package
+        $templatesPath = implode(
+            DIRECTORY_SEPARATOR,
+            array(realpath(dirname(__FILE__)), '..', '..', '..', 'predicthq', 'address-formatter-templates', 'conf')
+        );
+
+        if (!is_dir($templatesPath)) {
+            // Local repository vendor/
+            $templatesPath = implode(
+                DIRECTORY_SEPARATOR,
+                array(realpath(dirname(__FILE__)), '..', 'vendor', 'predicthq', 'address-formatter-templates', 'conf')
+            );
+        }
+
+        if (!is_dir($templatesPath)) {
+            throw new TemplatesMissingException('Address formatting templates path cannot be found.');
+        }
+
+        $countriesPath     = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'countries', 'worldwide.yaml'));
+        $componentsPath    = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'components.yaml'));
+        $stateCodesPath    = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'state_codes.yaml'));
+        $countryToLangPath = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'country2lang.yaml'));
+        $countyCodesPath   = implode(DIRECTORY_SEPARATOR, array($templatesPath, 'county_codes.yaml'));
+        $abbreviationFiles = glob(implode(DIRECTORY_SEPARATOR, array($templatesPath, 'abbreviations/*.yaml')));
+
+        $components       = [];
+        $componentAliases = [];
+        $templates        = [];
+        $stateCodes       = [];
+        $countryToLang    = [];
+        $countyCodes      = [];
+        $abbreviations    = [];
+
+        /**
+         * The components file is made up of multiple yaml documents but the symfony yaml parser
+         * doesn't support multiple docs in a single file. So we split it into multiple docs.
+         */
+        $componentYamlParts = explode('---', file_get_contents($componentsPath));
+
+        foreach ($componentYamlParts as $key => $val) {
+            $component = Yaml::parse($val);
+
+            if (isset($component['aliases'])) {
+                foreach ($component['aliases'] as $k => $v) {
+                    $componentAliases[$v] = $component['name'];
+                }
+            }
+
+            $components[$component['name']] = (isset($component['aliases'])) ? $component['aliases'] : [];
+        }
+
+        //Load the country templates, state codes and country2lang data
+        $templates     = Yaml::parse(file_get_contents($countriesPath));
+        $stateCodes    = Yaml::parse(file_get_contents($stateCodesPath));
+        $countryToLang = Yaml::parse(file_get_contents($countryToLangPath));
+        $countyCodes   = Yaml::parse(file_get_contents($countyCodesPath));
+
+        //Load the abbreviations files
+        foreach ($abbreviationFiles as $key => $val) {
+            $lang = strtoupper(basename($val, '.yaml'));
+            $data = Yaml::parse(file_get_contents($val));
+            $abbreviations[$lang] = $data;
+        }
+
+        $this->components       = $components;
+        $this->componentAliases = $componentAliases;
+        $this->templates        = $templates;
+        $this->stateCodes       = $stateCodes;
+        $this->countryToLang    = $countryToLang;
+        $this->countyCodes      = $countyCodes;
+        $this->abbreviations    = $abbreviations;
     }
 }
