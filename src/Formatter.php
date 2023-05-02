@@ -605,11 +605,19 @@ class Formatter
      */
     private function loadTemplates(): void
     {
-        // Installed as package
+        // Installed as submodule in project
         $templatesPath = implode(
             DIRECTORY_SEPARATOR,
-            array(realpath(dirname(__FILE__)), '..', 'address-formatting', 'conf')
+            array(realpath(dirname(__FILE__)), '..', '..', '..', '..', 'address-formatting', 'conf')
         );
+
+        // Installed as submodule here for unit tests
+        if (!is_dir($templatesPath)) {
+            $templatesPath = implode(
+                DIRECTORY_SEPARATOR,
+                array(realpath(dirname(__FILE__)), '..', 'address-formatting', 'conf')
+            );
+        }
 
         if (!is_dir($templatesPath)) {
             throw new TemplatesMissingException('Address formatting templates path cannot be found.');

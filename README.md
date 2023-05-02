@@ -8,7 +8,8 @@ differently depending on the country.
 Install the latest version with
 
 ``` bash
-$ composer require predicthq/address-formatter
+$ composer require k-ko/address-formatter-php
+$ git submodule add https://github.com/OpenCageData/address-formatting.git
 ```
 
 ## Examples
