@@ -22,6 +22,7 @@ use Symfony\Component\Yaml\Yaml;
 class Formatter
 {
     private $components = [];
+    private $countries = [];
     private $componentAliases = [];
     private $templates = [];
     private $stateCodes = [];
@@ -607,16 +608,8 @@ class Formatter
         // Installed as package
         $templatesPath = implode(
             DIRECTORY_SEPARATOR,
-            array(realpath(dirname(__FILE__)), '..', '..', '..', 'predicthq', 'address-formatter-templates', 'conf')
+            array(realpath(dirname(__FILE__)), '..', 'address-formatting', 'conf')
         );
-
-        if (!is_dir($templatesPath)) {
-            // Local repository vendor/
-            $templatesPath = implode(
-                DIRECTORY_SEPARATOR,
-                array(realpath(dirname(__FILE__)), '..', 'vendor', 'predicthq', 'address-formatter-templates', 'conf')
-            );
-        }
 
         if (!is_dir($templatesPath)) {
             throw new TemplatesMissingException('Address formatting templates path cannot be found.');
