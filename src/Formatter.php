@@ -431,8 +431,8 @@ class Formatter
                 if ($type === 'state') {
                     if (array_key_exists($addressArray['country_code'], $this->stateCodes)) {
                         foreach ($this->stateCodes[$addressArray['country_code']] as $key => $val) {
-                            if (strtoupper($addressArray['state']) == strtoupper($val)) {
-                                $addressArray['state_code'] = $key;
+                            if (strtoupper($addressArray['state']) == $key && isset($val['default'])) {
+                                $addressArray['state_code'] = $val['default'];
                             }
                         }
 
@@ -444,8 +444,8 @@ class Formatter
                                     $state = preg_replace('/^United States/i', 'US', $state);
 
                                     foreach ($this->stateCodes[$addressArray['country_code']] as $key => $val) {
-                                        if (strtoupper($state) == strtoupper($val)) {
-                                            $addressArray['state_code'] = $key;
+                                        if (strtoupper($state) == $key && isset($val['default'])) {
+                                            $addressArray['state_code'] = $val['default'];
                                             break;
                                         }
                                     }
